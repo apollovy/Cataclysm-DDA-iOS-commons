@@ -4,12 +4,16 @@
 // Copyright (c) 2021 Аполлов Юрий Андреевич. All rights reserved.
 //
 
-@import CoreGraphics;
+#import <CoreGraphics/CoreGraphics.h>
 
+#import "options.h"
 #import "SDL_char_utils.h"
 
 #import "SDL_uikitviewcontroller+Gamepad.h"
 #import "GamePadViewController.h"
+
+
+extern bool resize_term(int, int);
 
 
 #pragma mark - OnKeyboardHandler
@@ -110,6 +114,9 @@ NSDate* _startDate;
 
 @implementation SDL_uikitviewcontroller (Gamepad)
 
+int terminal_width;
+int terminal_height;
+
 - (void)viewDidAppear:(BOOL)animated {
     _onKeyboardHandler = [OnKeyboardHandler initWithController:self];
     for (NSNotificationName notification in @[UIKeyboardWillShowNotification, UIKeyboardWillHideNotification,  UIApplicationDidBecomeActiveNotification, UIApplicationWillResignActiveNotification])
@@ -118,7 +125,19 @@ NSDate* _startDate;
     for (NSString* keyPath in @[@"overlayUIEnabled", @"panningWith1Finger"])
         [NSUserDefaults.standardUserDefaults addObserver:self forKeyPath:keyPath options:(NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew) context:nil];
 
+    terminal_width = get_option<int>( "TERMINAL_X" );
+    terminal_height = get_option<int>( "TERMINAL_Y" );
+
     [self resizeRootView];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        // we cannot know for sure when the game will resize its window to native size, so that dirty
+        [self resizeTerminal];
+    });
+}
+
+- (void) resizeTerminal {
+    resize_term(terminal_width, terminal_height);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -171,6 +190,8 @@ static CGSize _minSize = {632, 368};
         viewFrame.size.height = keyboardLessHeight;
     }
     view.frame = viewFrame;
+    
+    [self resizeTerminal];
 }
 
 - (void)maybeToggleUI
