@@ -15,3 +15,5 @@
 
 /* (No Comment) */
 "Resize game window when toggling keyboard (iPad only)" = "Cambiar el tamaño de la ventana del juego al alternar el teclado (solo iPad)";
+
+"Autoresize screen resolution" = "Resolución de pantalla de tamaño automático"

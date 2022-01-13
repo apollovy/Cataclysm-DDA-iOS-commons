@@ -33,6 +33,7 @@ int main(int argc, char * argv[]) {
             @"keyboardSwipeTime": @0.05,
             @"resizeGameWindowWhenTogglingKeyboard": @YES,
             @"panningWith1Finger": @NO,
+            @"screenAutoresize": @YES,
         };
         [NSUserDefaults.standardUserDefaults registerDefaults:appDefaults];
 

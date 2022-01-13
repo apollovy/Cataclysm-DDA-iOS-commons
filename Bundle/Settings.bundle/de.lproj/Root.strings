@@ -15,3 +15,5 @@
 
 /* (No Comment) */
 "Resize game window when toggling keyboard (iPad only)" = "Ändern Sie die Größe des Spielfensters, wenn Sie die Tastatur umschalten (nur iPad).";
+
+"Autoresize screen resolution" = "Bildschirmauflösung automatisch anpassen"

@@ -5,8 +5,10 @@
 //
 
 #import <CoreGraphics/CoreGraphics.h>
+#import <iostream>
 
 #import "options.h"
+#import "ui_manager.h"
 #import "SDL_char_utils.h"
 
 #import "SDL_uikitviewcontroller+Gamepad.h"
@@ -114,30 +116,21 @@ NSDate* _startDate;
 
 @implementation SDL_uikitviewcontroller (Gamepad)
 
-int terminal_width;
-int terminal_height;
+const NSArray<NSString*>* _observedSettings = @[@"overlayUIEnabled", @"panningWith1Finger", @"screenAutoresize"];
+
+std::unique_ptr<ui_adaptor> _uiAdaptor;
 
 - (void)viewDidAppear:(BOOL)animated {
     _onKeyboardHandler = [OnKeyboardHandler initWithController:self];
+    _uiAdaptor = std::make_unique<ui_adaptor>();
+
     for (NSNotificationName notification in @[UIKeyboardWillShowNotification, UIKeyboardWillHideNotification,  UIApplicationDidBecomeActiveNotification, UIApplicationWillResignActiveNotification])
         [[NSNotificationCenter defaultCenter] addObserver:_onKeyboardHandler selector:@selector(onKeyboard) name:notification object:nil];
 
-    for (NSString* keyPath in @[@"overlayUIEnabled", @"panningWith1Finger"])
+    for (NSString* keyPath in _observedSettings)
         [NSUserDefaults.standardUserDefaults addObserver:self forKeyPath:keyPath options:(NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew) context:nil];
 
-    terminal_width = get_option<int>( "TERMINAL_X" );
-    terminal_height = get_option<int>( "TERMINAL_Y" );
-
     [self resizeRootView];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        // we cannot know for sure when the game will resize its window to native size, so that dirty
-        [self resizeTerminal];
-    });
-}
-
-- (void) resizeTerminal {
-    resize_term(terminal_width, terminal_height);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -148,7 +141,7 @@ int terminal_height;
     _gamepadViewController = nil;
 
     @try {
-        for (NSString* keyPath in @[@"overlayUIEnabled", @"panningWith1Finger"])
+        for (NSString* keyPath in _observedSettings)
             [NSUserDefaults.standardUserDefaults removeObserver:self forKeyPath:keyPath context:nil];
     } @catch (NSException *exception) {
         NSLog(@"Failed to remove the observer: %@", exception);
@@ -162,6 +155,8 @@ int terminal_height;
         [self maybeToggleUI];
     else if ([keyPath isEqual:@"panningWith1Finger"])
         [self addRecognizers];
+    else if ([keyPath isEqual:@"screenAutoresize"])
+        [self toggleScreenAutoresize];
     else
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
@@ -190,8 +185,6 @@ static CGSize _minSize = {632, 368};
         viewFrame.size.height = keyboardLessHeight;
     }
     view.frame = viewFrame;
-    
-    [self resizeTerminal];
 }
 
 - (void)maybeToggleUI
@@ -208,6 +201,19 @@ static CGSize _minSize = {632, 368};
         [self hideKeyboard];
         [_gamepadViewController.view removeFromSuperview];
         _gamepadViewController = nil;
+    }
+}
+
+
+- (void)toggleScreenAutoresize {
+    // since autoresize is the default behavior, we'll add our custom only when the setting is FALSE
+    if (![NSUserDefaults.standardUserDefaults boolForKey:@"screenAutoresize"])
+    {
+        _uiAdaptor->on_screen_resize( [&]( ui_adaptor & ui ) {
+            resize_term(get_option<int>( "TERMINAL_X" ), get_option<int>( "TERMINAL_Y" ));
+        });
+    } else {
+        _uiAdaptor->on_screen_resize( [&]( ui_adaptor & ui ){});
     }
 }
 

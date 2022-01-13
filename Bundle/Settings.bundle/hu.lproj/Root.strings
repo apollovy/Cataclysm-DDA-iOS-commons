@@ -15,3 +15,5 @@
 
 /* (No Comment) */
 "Resize game window when toggling keyboard (iPad only)" = "A játékablak átméretezése a billentyűzet váltásakor (csak iPad esetén)";
+
+"Autoresize screen resolution" = "Képernyőfelbontás automatikus méretezése"
