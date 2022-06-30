@@ -7,8 +7,11 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <iostream>
 
+#if !defined(DCSS_IOS)
 #import "options.h"
 #import "ui_manager.h"
+#endif
+
 #import "SDL_char_utils.h"
 
 #import "SDL_uikitviewcontroller+Gamepad.h"
@@ -118,11 +121,15 @@ NSDate* _startDate;
 
 const NSArray<NSString*>* _observedSettings = @[@"overlayUIEnabled", @"panningWith1Finger", @"screenAutoresize"];
 
+#if !defined(DCSS_IOS)
 std::unique_ptr<ui_adaptor> _uiAdaptor;
+#endif
 
 - (void)viewDidAppear:(BOOL)animated {
     _onKeyboardHandler = [OnKeyboardHandler initWithController:self];
+#if !defined(DCSS_IOS)
     _uiAdaptor = std::make_unique<ui_adaptor>();
+#endif
 
     for (NSNotificationName notification in @[UIKeyboardWillShowNotification, UIKeyboardWillHideNotification,  UIApplicationDidBecomeActiveNotification, UIApplicationWillResignActiveNotification])
         [[NSNotificationCenter defaultCenter] addObserver:_onKeyboardHandler selector:@selector(onKeyboard) name:notification object:nil];
@@ -207,6 +214,7 @@ static CGSize _minSize = {632, 368};
 
 - (void)toggleScreenAutoresize {
     // since autoresize is the default behavior, we'll add our custom only when the setting is FALSE
+#if !defined(DCSS_IOS)
     if (![NSUserDefaults.standardUserDefaults boolForKey:@"screenAutoresize"])
     {
         _uiAdaptor->on_screen_resize( [&]( ui_adaptor & ui ) {
@@ -215,6 +223,7 @@ static CGSize _minSize = {632, 368};
     } else {
         _uiAdaptor->on_screen_resize( [&]( ui_adaptor & ui ){});
     }
+#endif
 }
 
 OnKeyboardHandler* _onKeyboardHandler;
