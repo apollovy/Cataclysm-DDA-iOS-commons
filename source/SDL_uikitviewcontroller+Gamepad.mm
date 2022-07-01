@@ -16,6 +16,7 @@
 
 #import "SDL_uikitviewcontroller+Gamepad.h"
 #import "GamePadViewController.h"
+#import "game_dependent.h"
 
 
 extern bool resize_term(int, int);
@@ -303,22 +304,22 @@ GestureRecognizerDelegate* _gestureRecognizerDelegate;
 {
     if ((sender.scale > _minScale) || (sender.scale < _maxScale))
     {
-        NSString* text;
+        bool in;
         int multiplier;
         if (sender.scale > 1)
         {
-            text = @"z";
+            in = true;
             multiplier = (sender.scale - 1) / _zoomingPrecision;
         }
         else
         {
-            text = @"Z";
+            in = false;
             multiplier = (1 - sender.scale) / _zoomingPrecision;
         }
         sender.scale = 1;
         
         for (int i=0; i < multiplier; i++)
-            SDL_send_text_event(text);
+            zoom(in);
     }
 }
 
