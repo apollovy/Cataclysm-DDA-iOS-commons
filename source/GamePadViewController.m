@@ -70,6 +70,11 @@ BOOL pressed;
             sym = SDLK_TAB;
             modifier = KMOD_SHIFT;
         }
+        else if ((text.length > 2) && ([[text substringToIndex:2] isEqual:@"C-"]))
+        {
+            sym = [text characterAtIndex:2];
+            modifier = KMOD_CTRL;
+        }
         SDL_send_keysym_or_text(sym, modifier, text);
     }
 }
