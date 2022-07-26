@@ -52,7 +52,7 @@ BOOL pressed;
         SDL_Keymod modifier = KMOD_NONE;
         
         // special symbols
-        if ([text  isEqual: @"ESC"])
+        if ([text  isEqual: @"⎋"])
         {
             if (_activeMenuButton)
             {
@@ -61,18 +61,28 @@ BOOL pressed;
             }
             sym = SDLK_ESCAPE;
         }
-        else if ([text isEqual:@"⮐"])
+        else if ([text isEqual: @"⮐"])
             sym = SDLK_RETURN;
-        else if ([text isEqual:@"TAB"])
+        else if ([text isEqual: @"⇥"])
             sym = SDLK_TAB;
-        else if ([text isEqual:@"BTAB"])
+        else if ([text isEqual: @"p"])
         {
-            sym = SDLK_TAB;
-            modifier = KMOD_SHIFT;
+            SDL_send_text_event(text);
+            return;
         }
-        else if ((text.length > 2) && ([[text substringToIndex:2] isEqual:@"C-"]))
+        else if ([text isEqual: @"x"])
         {
-            sym = [text characterAtIndex:2];
+            SDL_send_text_event(text);
+            return;
+        }
+        else if ([text isEqual: @"v"])
+        {
+            SDL_send_text_event(text);
+            return;
+        }
+        else if ([[text substringToIndex:1] isEqual: @"⌃"])
+        {
+            sym = [text characterAtIndex:1];
             modifier = KMOD_CTRL;
         }
         SDL_send_keysym_or_text(sym, modifier, text);
@@ -263,9 +273,12 @@ const float _scrollingPrecision = 10;
             SDL_KeyCode sym = SDLK_UNKNOWN;
 
             if ((lastScrollingLocation.y > currentLocation.y) != [NSUserDefaults.standardUserDefaults boolForKey:@"invertScroll"])
-                sym = SDLK_PAGEDOWN;
+                //sym = SDLK_PAGEDOWN;
+                sym = SDLK_DOWN;
             else
-                sym = SDLK_PAGEUP;
+                //sym = SDLK_PAGEUP;
+                sym = SDLK_UP;
+
 
             for (int i=0; i < (yDiff / _scrollingPrecision); i++)
                 SDL_send_keysym(sym, KMOD_NONE);
