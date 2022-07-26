@@ -273,11 +273,9 @@ const float _scrollingPrecision = 10;
             SDL_KeyCode sym = SDLK_UNKNOWN;
 
             if ((lastScrollingLocation.y > currentLocation.y) != [NSUserDefaults.standardUserDefaults boolForKey:@"invertScroll"])
-                //sym = SDLK_PAGEDOWN;
-                sym = SDLK_DOWN;
+                sym = SDLK_PAGEDOWN;
             else
-                //sym = SDLK_PAGEUP;
-                sym = SDLK_UP;
+                sym = SDLK_PAGEUP;
 
 
             for (int i=0; i < (yDiff / _scrollingPrecision); i++)
