@@ -277,7 +277,6 @@ const float _scrollingPrecision = 10;
             else
                 sym = SDLK_PAGEUP;
 
-
             for (int i=0; i < (yDiff / _scrollingPrecision); i++)
                 SDL_send_keysym(sym, KMOD_NONE);
             lastScrollingLocation = currentLocation;
