@@ -76,7 +76,7 @@
 			<key>Key</key>
 			<string>screenAutoresize</string>
 			<key>DefaultValue</key>
-			<true/>
+			<false/>
 		</dict>
 	</array>
 </dict>
