@@ -139,6 +139,8 @@ std::unique_ptr<ui_adaptor> _uiAdaptor;
         [NSUserDefaults.standardUserDefaults addObserver:self forKeyPath:keyPath options:(NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew) context:nil];
 
     [self resizeRootView];
+    UIWindow* window = [[UIApplication.sharedApplication windows] firstObject];
+    window.rootViewController = self;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
