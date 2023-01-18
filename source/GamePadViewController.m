@@ -6,7 +6,6 @@
 //  Copyright © 2021 Аполлов Юрий Андреевич. All rights reserved.
 //
 #import "SDL_events.h"
-#include "SDL_uikitviewcontroller.h"
 
 #import "JSButton.h"
 

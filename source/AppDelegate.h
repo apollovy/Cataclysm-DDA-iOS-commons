@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "SDL_uikitappdelegate.h"
-
+@interface SDLUIKitDelegate : NSObject<UIApplicationDelegate>
+- (void)hideLaunchScreen;
+@end
 
 @interface AppDelegate : SDLUIKitDelegate
 
